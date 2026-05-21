@@ -493,12 +493,12 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
-  emailjs.init({
-    publicKey: 'i2Sf6PVDPM2STEVrR',
-    privateKey: 'OlEnlFcNCTxV0hM0NBJyJ',
-  });
+  const EMAILJS_PUBLIC_KEY  = 'i2Sf6PVDPM2STEVrR';
+  const EMAILJS_SERVICE_ID  = 'service_t34md4j';
+  const EMAILJS_TEMPLATE_ID = 'template_wl41x6x';
+  emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
   const d = new Date();
   const pad = n => String(n).padStart(2,'0');
   document.getElementById('updated-date').textContent =
@@ -586,7 +586,7 @@
     btn.textContent = 'Đang gửi...';
     btn.disabled = true;
 
-    emailjs.send('service_t34md4j', 'template_wl41x6x', {
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
       ten_sp:     name,
       quy_cach:   _type + ' · ' + _spec,
       so_luong:   _qty,
@@ -598,7 +598,7 @@
       dot1:       fmt(coc) + ' đ',
       dot2:       fmt(coc2) + ' đ',
       ghi_chu:    note || '(không có)',
-    }, ).then(() => {
+    }, { publicKey: EMAILJS_PUBLIC_KEY }).then(() => {
       closeModal();
       showSuccess();
     }).catch((err) => {
