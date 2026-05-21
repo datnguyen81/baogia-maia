@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Báo Giá In Ấn · MAIA</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #fff;
+    color: #111;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 56px 28px 100px;
+  }
+
+  h1 {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.8px;
+    color: #111;
+    margin-bottom: 6px;
+  }
+
+  .page-meta {
+    font-size: 13px;
+    color: #999;
+    margin-bottom: 24px;
+  }
+
+  .maia-note {
+    font-size: 12px;
+    font-weight: 500;
+    color: #555;
+    padding: 10px 14px;
+    border-left: 3px solid #111;
+    background: #f7f7f7;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 20px;
+  }
+
+  .notice {
+    background: #111;
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin-bottom: 40px;
+    font-size: 12.5px;
+    color: #aaa;
+    line-height: 1.6;
+  }
+  .notice strong { color: #fff; font-weight: 600; }
+
+  section { margin-bottom: 36px; }
+
+  h2 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #111;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tag {
+    font-size: 10px;
+    font-weight: 500;
+    color: #888;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 1px 7px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .spec-line {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 10px;
+    padding-left: 2px;
+    line-height: 1.5;
+  }
+
+  .spec-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-right: 6px;
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid #efefef;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 18px;
+    background: #fafafa;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .card-head span {
+    font-size: 11px;
+    font-weight: 700;
+    color: #111;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .col-group { display: flex; }
+
+  .col-group span {
+    width: 72px;
+    text-align: right;
+    font-size: 12px;
+    font-weight: 700;
+    color: #111;
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid #f5f5f5;
+    transition: background 0.1s;
+  }
+  .item:last-child { border-bottom: none; }
+  .item:hover { background: #fafafa; }
+
+  .item-left { display: flex; flex-direction: column; gap: 3px; }
+
+  .item-left h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111;
+    letter-spacing: -0.1px;
+    text-transform: none;
+  }
+
+  .item-sub {
+    font-size: 11.5px;
+    color: #bbb;
+    font-weight: 400;
+  }
+
+  .item-prices { display: flex; }
+
+  /* Ô giá có thể bấm */
+  .price-cell {
+    width: 72px;
+    text-align: right;
+    font-size: 12px;
+    font-weight: 600;
+    color: #111;
+    letter-spacing: -0.1px;
+    cursor: pointer;
+    padding: 4px 0;
+    border-radius: 6px;
+    transition: background 0.12s, color 0.12s;
+  }
+  .price-cell:hover {
+    background: #111;
+    color: #fff;
+  }
+
+  /* ── Modal ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: #fff;
+    border-radius: 20px;
+    padding: 28px 28px 24px;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 20px;
+    animation: popIn 0.2s ease;
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+
+  .modal-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: #999;
+    letter-spacing: 0.3px;
+    margin-bottom: 6px;
+  }
+
+  .modal-sub {
+    font-size: 22px;
+    font-weight: 800;
+    color: #111;
+    letter-spacing: -0.5px;
+    margin-bottom: 20px;
+  }
+
+  .modal-summary {
+    background: #f7f7f7;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: #666;
+    line-height: 2;
+  }
+
+  .modal-summary strong {
+    color: #111;
+    font-weight: 700;
+  }
+
+  .modal-total { display: none; }
+
+  .modal-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #111;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 6px;
+  }
+
+  .modal-input {
+    width: 100%;
+    border: 1px solid #e8e8e8;
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    color: #111;
+    outline: none;
+    margin-bottom: 20px;
+    transition: border 0.15s;
+  }
+  .modal-input:focus { border-color: #111; }
+  .modal-input::placeholder { color: #ccc; }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-cancel {
+    flex: 1;
+    padding: 11px;
+    border: 1px solid #e8e8e8;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    background: #fff;
+    color: #888;
+    cursor: pointer;
+  }
+
+  .btn-order {
+    flex: 2;
+    padding: 11px;
+    border: none;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    background: #111;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .contact {
+    background: #fff;
+    border: 1px solid #efefef;
+    border-radius: 16px;
+    padding: 18px;
+    margin-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contact strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 3px;
+  }
+
+  .contact span { font-size: 12px; color: #999; }
+
+  .contact-btn {
+    background: #111;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 9px 20px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Báo Giá In Ấn</h1>
+    <p class="page-meta">Cập nhật <span id="updated-date"></span> · Giá chưa bao gồm VAT</p>
+  </header>
+
+  <p class="maia-note">Áp dụng riêng cho ấn phẩm của MAIA</p>
+
+  <div class="notice">
+    <strong>Lưu ý:</strong> Giá cập nhật theo vật tư hàng tuần. Vui lòng xác nhận trước khi đặt hàng.
+  </div>
+
+  <!-- A5 -->
+  <section>
+    <h2>Biểu mẫu A5 <span class="tag">145×210mm</span> <span class="tag">Đơn vị: cuốn</span></h2>
+    <p class="spec-line"><span class="spec-label">Quy cách</span> Bìa C250 in màu 2 mặt · Ruột 100 tờ/cuốn · Răng cưa, đóng ghim, không số nhảy</p>
+    <div class="card">
+      <div class="card-head">
+        <span>Loại</span>
+        <div class="col-group">
+          <span>50</span><span>70</span><span>100</span><span>150</span><span>200</span>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-left">
+          <h3>A5 · 1 liên · 1 mặt</h3>
+          <span class="item-sub">Giấy ruột F70</span>
+        </div>
+        <div class="item-prices">
+          <div class="price-cell" onclick="openModal('A5 · 1 liên · 1 mặt','Giấy ruột F70',50,20000)">20.000</div>
+          <div class="price-cell" onclick="openModal('A5 · 1 liên · 1 mặt','Giấy ruột F70',70,30000)">30.000</div>
+          <div class="price-cell" onclick="openModal('A5 · 1 liên · 1 mặt','Giấy ruột F70',100,40000)">40.000</div>
+          <div class="price-cell" onclick="openModal('A5 · 1 liên · 1 mặt','Giấy ruột F70',150,50000)">50.000</div>
+          <div class="price-cell" onclick="openModal('A5 · 1 liên · 1 mặt','Giấy ruột F70',200,60000)">60.000</div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-left">
+          <h3>A5 · 1 liên · 2 mặt</h3>
+          <span class="item-sub">Giấy ruột F80</span>
+        </div>
+        <div class="item-prices">
+          <div class="price-cell" onclick="openModal('A5 · 1 liên · 2 mặt','Giấy ruột F80',50,43000)">43.000</div>
+          <div class="price-cell" onclick="openModal('A5 · 1 liên · 2 mặt','Giấy ruột F80',70,43000)">43.000</div>
+          <div class="price-cell" onclick="openModal('A5 · 1 liên · 2 mặt','Giấy ruột F80',100,43000)">43.000</div>
+          <div class="price-cell" onclick="openModal('A5 · 1 liên · 2 mặt','Giấy ruột F80',150,43000)">43.000</div>
+          <div class="price-cell" onclick="openModal('A5 · 1 liên · 2 mặt','Giấy ruột F80',200,43000)">43.000</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- A4 -->
+  <section>
+    <h2>Biểu mẫu A4 <span class="tag">297×210mm</span> <span class="tag">Đơn vị: cuốn</span></h2>
+    <p class="spec-line"><span class="spec-label">Quy cách</span> Bìa C250 in màu 2 mặt · Ruột 100 tờ/cuốn · Răng cưa, đóng ghim, không số nhảy</p>
+    <div class="card">
+      <div class="card-head">
+        <span>Loại</span>
+        <div class="col-group">
+          <span>50</span><span>70</span><span>100</span><span>150</span><span>200</span>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-left">
+          <h3>A4 · 1 liên · 1 mặt</h3>
+          <span class="item-sub">Giấy ruột F70</span>
+        </div>
+        <div class="item-prices">
+          <div class="price-cell" onclick="openModal('A4 · 1 liên · 1 mặt','Giấy ruột F70',50,20000)">20.000</div>
+          <div class="price-cell" onclick="openModal('A4 · 1 liên · 1 mặt','Giấy ruột F70',70,30000)">30.000</div>
+          <div class="price-cell" onclick="openModal('A4 · 1 liên · 1 mặt','Giấy ruột F70',100,40000)">40.000</div>
+          <div class="price-cell" onclick="openModal('A4 · 1 liên · 1 mặt','Giấy ruột F70',150,50000)">50.000</div>
+          <div class="price-cell" onclick="openModal('A4 · 1 liên · 1 mặt','Giấy ruột F70',200,60000)">60.000</div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-left">
+          <h3>A4 · 1 liên · 2 mặt</h3>
+          <span class="item-sub">Giấy ruột F80</span>
+        </div>
+        <div class="item-prices">
+          <div class="price-cell" onclick="openModal('A4 · 1 liên · 2 mặt','Giấy ruột F80',50,24000)">24.000</div>
+          <div class="price-cell" onclick="openModal('A4 · 1 liên · 2 mặt','Giấy ruột F80',70,36000)">36.000</div>
+          <div class="price-cell" onclick="openModal('A4 · 1 liên · 2 mặt','Giấy ruột F80',100,48000)">48.000</div>
+          <div class="price-cell" onclick="openModal('A4 · 1 liên · 2 mặt','Giấy ruột F80',150,60000)">60.000</div>
+          <div class="price-cell" onclick="openModal('A4 · 1 liên · 2 mặt','Giấy ruột F80',200,72000)">72.000</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="contact">
+    <div>
+      <strong>Số lượng khác?</strong>
+      <span>Liên hệ để nhận báo giá riêng</span>
+    </div>
+    <button class="contact-btn">Liên hệ</button>
+  </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal" onclick="closeOnOverlay(event)">
+  <div class="modal">
+    <div class="modal-sub" id="modal-sub-text"></div>
+    <div class="modal-title">Xác nhận đơn hàng</div>
+
+    <div class="modal-summary">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span>Số lượng</span>
+        <strong id="m-qty"></strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span>Đơn giá</span>
+        <strong id="m-price"></strong>
+      </div>
+      <div style="height:1px;background:#eee;margin:10px 0;"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span>Tổng cộng (chưa VAT)</span>
+        <strong id="m-total"></strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span>VAT (8%)</span>
+        <strong id="m-vat"></strong>
+      </div>
+      <div style="height:1px;background:#eee;margin:10px 0;"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-weight:700;color:#111;">Tổng tiền (đã VAT)</span>
+        <strong id="m-total-vat" style="font-size:15px;"></strong>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:#111;margin-top:6px;text-align:right;" id="m-bangchu"></div>
+      <div style="height:1px;background:#eee;margin:12px 0;"></div>
+      <div style="font-size:12.5px;line-height:2;">
+        <div style="display:flex;justify-content:space-between;"><span style="color:#888;">Đợt 1 (khi xác nhận đơn hàng)</span><strong id="m-coc" style="color:#111;"></strong></div>
+        <div style="display:flex;justify-content:space-between;"><span style="color:#888;">Đợt 2 (khi nhận hàng)</span><strong id="m-coc2" style="color:#111;"></strong></div>
+      </div>
+      <div style="height:1px;background:#eee;margin:12px 0;"></div>
+      <div style="font-size:12px;line-height:2;color:#888;">
+        <div style="display:flex;justify-content:space-between;"><span>Chủ tài khoản</span><strong style="color:#111;">Công ty TNHH HM PRODUCTION</strong></div>
+        <div style="display:flex;justify-content:space-between;"><span>Số tài khoản</span><strong style="color:#111;">00911 888 66 868</strong></div>
+        <div style="display:flex;justify-content:space-between;"><span>Ngân hàng</span><span style="color:#555;text-align:right;">MB Bank, PGD Hàm Nghi, CN Sài Gòn</span></div>
+      </div>
+    </div>
+
+    <div class="modal-label">Vui lòng ghi tên sản phẩm cần in</div>
+    <input class="modal-input" id="modal-name" type="text" placeholder="VD: Phiếu chỉ định, Sổ theo dõi...">
+
+    <div class="modal-label">Ghi chú (nếu có)</div>
+    <input class="modal-input" id="modal-note" type="text" placeholder="VD: Giao tận nơi, cần gấp...">
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Huỷ</button>
+      <button class="btn-order" onclick="sendZalo()">Gửi đặt hàng →</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>
+  emailjs.init('i2Sf6PVDPM2STEVrR');
+  const d = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('updated-date').textContent =
+    `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+
+  let _qty = 0, _price = 0, _type = '', _spec = '';
+
+  function fmt(n) {
+    return n.toLocaleString('vi-VN');
+  }
+
+  const units = ['','một','hai','ba','bốn','năm','sáu','bảy','tám','chín'];
+  const tens  = ['','mười','hai mươi','ba mươi','bốn mươi','năm mươi','sáu mươi','bảy mươi','tám mươi','chín mươi'];
+
+  function docNhom(n) {
+    const h = Math.floor(n/100), t = Math.floor((n%100)/10), u = n%10;
+    let s = '';
+    if (h) s += units[h] + ' trăm ';
+    if (t === 1) { s += 'mười '; if (u) s += (u===5?'lăm':units[u]) + ' '; }
+    else if (t > 1) { s += tens[t] + ' '; if (u) s += (u===5?'lăm':u===1?'mốt':units[u]) + ' '; }
+    else if (h && u) s += 'lẻ ' + units[u] + ' ';
+    else if (u) s += units[u] + ' ';
+    return s.trim();
+  }
+
+  function bangChu(n) {
+    if (n === 0) return 'không đồng';
+    const ty = Math.floor(n/1000000000);
+    const trieu = Math.floor((n%1000000000)/1000000);
+    const nghin = Math.floor((n%1000000)/1000);
+    const le = n%1000;
+    let s = '';
+    if (ty) s += docNhom(ty) + ' tỷ ';
+    if (trieu) s += docNhom(trieu) + ' triệu ';
+    if (nghin) s += docNhom(nghin) + ' nghìn ';
+    if (le) s += docNhom(le);
+    return s.trim().charAt(0).toUpperCase() + s.trim().slice(1) + ' đồng';
+  }
+
+  function openModal(type, spec, qty, price) {
+    _qty = qty; _price = price; _type = type; _spec = spec;
+    const total = qty * price;
+    const vat = Math.round(total * 0.08);
+    const totalVat = total + vat;
+    document.getElementById('modal-sub-text').textContent = type;
+    document.getElementById('m-qty').textContent = qty + ' cuốn';
+    document.getElementById('m-price').textContent = fmt(price) + ' đ';
+    document.getElementById('m-total').textContent = fmt(total) + ' đ';
+    document.getElementById('m-vat').textContent = fmt(vat) + ' đ';
+    document.getElementById('m-total-vat').textContent = fmt(totalVat) + ' đ';
+    document.getElementById('m-bangchu').textContent = bangChu(totalVat);
+    const coc = Math.floor(totalVat / 2 / 1000000) * 1000000;
+    const coc2 = totalVat - coc;
+    document.getElementById('m-coc').textContent = fmt(coc) + ' đ';
+    document.getElementById('m-coc2').textContent = fmt(coc2) + ' đ';
+    document.getElementById('modal-name').value = '';
+    document.getElementById('modal-note').value = '';
+    document.getElementById('modal').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+  }
+
+  function closeOnOverlay(e) {
+    if (e.target === document.getElementById('modal')) closeModal();
+  }
+
+  function sendZalo() {
+    const name = document.getElementById('modal-name').value.trim();
+    if (!name) {
+      document.getElementById('modal-name').focus();
+      document.getElementById('modal-name').style.borderColor = '#f00';
+      setTimeout(() => document.getElementById('modal-name').style.borderColor = '', 1500);
+      return;
+    }
+    const note = document.getElementById('modal-note').value.trim();
+    const total = _qty * _price;
+    const vat = Math.round(total * 0.08);
+    const totalVat = total + vat;
+    const coc = Math.floor(totalVat / 2 / 1000000) * 1000000;
+    const coc2 = totalVat - coc;
+
+    const btn = document.querySelector('.btn-order');
+    btn.textContent = 'Đang gửi...';
+    btn.disabled = true;
+
+    emailjs.send('service_t34md4j', 'template_wl41x6x', {
+      ten_sp:     name,
+      quy_cach:   _type + ' · ' + _spec,
+      so_luong:   _qty,
+      don_gia:    fmt(_price) + ' đ',
+      thanh_tien: fmt(total) + ' đ',
+      vat:        fmt(vat) + ' đ',
+      tong_tien:  fmt(totalVat) + ' đ',
+      bang_chu:   bangChu(totalVat),
+      dot1:       fmt(coc) + ' đ',
+      dot2:       fmt(coc2) + ' đ',
+      ghi_chu:    note || '(không có)',
+    }, 'OlEnlFcNCTxV0hM0NBJyJ').then(() => {
+      closeModal();
+      showSuccess();
+    }).catch((err) => {
+      btn.textContent = 'Gửi đặt hàng →';
+      btn.disabled = false;
+      alert('Gửi thất bại, vui lòng thử lại!');
+      console.error(err);
+    });
+  }
+
+  function showSuccess() {
+    const overlay = document.getElementById('modal');
+    overlay.classList.add('open');
+    document.querySelector('.modal').innerHTML = `
+      <div style="text-align:center;padding:20px 0;">
+        <div style="font-size:40px;margin-bottom:16px;">✓</div>
+        <div style="font-size:20px;font-weight:800;color:#111;margin-bottom:8px;">Đã gửi đơn hàng!</div>
+        <div style="font-size:13px;color:#999;margin-bottom:24px;">Chúng tôi sẽ liên hệ xác nhận sớm nhất.</div>
+        <button class="btn-order" style="width:100%;justify-content:center;" onclick="closeModal();location.reload();">Đóng</button>
+      </div>
+    `;
+  }
+</script>
+</body>
+</html>
