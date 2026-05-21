@@ -495,7 +495,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script>
-  emailjs.init('i2Sf6PVDPM2STEVrR');
+  emailjs.init({
+    publicKey: 'i2Sf6PVDPM2STEVrR',
+    privateKey: 'OlEnlFcNCTxV0hM0NBJyJ',
+  });
   const d = new Date();
   const pad = n => String(n).padStart(2,'0');
   document.getElementById('updated-date').textContent =
@@ -595,7 +598,7 @@
       dot1:       fmt(coc) + ' đ',
       dot2:       fmt(coc2) + ' đ',
       ghi_chu:    note || '(không có)',
-    }, 'OlEnlFcNCTxV0hM0NBJyJ').then(() => {
+    }, ).then(() => {
       closeModal();
       showSuccess();
     }).catch((err) => {
